@@ -209,7 +209,7 @@ impl<'a> Iterator for InterfacesIter<'a> {
     }
 }
 
-///Network interfaces
+///Network interfaces enumerator.
 pub struct Interfaces {
     ///inner address
     buffer: Vec<u8>,

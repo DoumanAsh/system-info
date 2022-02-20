@@ -9,6 +9,9 @@ categories = ["os", "api-bindings"]
 repository = "https://github.com/DoumanAsh/system-info"
 license = "BSL-1.0"
 
+[dependencies.os-id]
+version = "3.0.1"
+
 [dependencies.libc]
 version = "0.2"
 default-features = false

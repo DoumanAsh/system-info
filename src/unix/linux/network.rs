@@ -6,7 +6,7 @@ use std::vec::Vec;
 use std::borrow::Cow;
 use std::net;
 
-use core::{mem, slice, iter, ptr};
+use core::{mem, slice, ptr, iter};
 
 pub use crate::data::network::Address;
 
@@ -176,6 +176,7 @@ impl<'a> Iterator for Addresses<'a> {
     }
 }
 
+
 ///Network interface
 pub struct Interface<'a> {
     data: &'a InterfaceData
@@ -250,7 +251,7 @@ impl<'a> Iterator for InterfacesIter<'a> {
     }
 }
 
-///Network interfaces
+///Network interfaces enumerator.
 pub struct Interfaces {
     inner: Vec<InterfaceData>,
 }

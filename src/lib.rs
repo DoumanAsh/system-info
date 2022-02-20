@@ -33,3 +33,6 @@ pub use win32::*;
 mod unix;
 #[cfg(unix)]
 pub use unix::*;
+
+pub use network::Interfaces as NetworkInterfaces;
+pub use os_id::{ProcessId, ThreadId, ThreadName};
