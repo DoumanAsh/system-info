@@ -6,7 +6,7 @@ use std::vec::Vec;
 use std::borrow::Cow;
 use std::net;
 
-use core::{mem, slice, ptr, iter};
+use core::{mem, slice, iter};
 
 pub use crate::data::network::Address;
 
@@ -90,18 +90,16 @@ impl Socket {
             iov_base: &mut msg as *mut _ as *mut _,
             iov_len: msg.header.nlmsg_len as _,
         };
-        let mut msg = libc::msghdr {
-            msg_name: &self.addr as *const _ as *mut _,
-            msg_namelen: mem::size_of_val(&self.addr) as _,
-            msg_iov: &mut msg as *mut _,
-            msg_iovlen: 1,
-            msg_control: ptr::null_mut(),
-            msg_controllen: 0,
-            msg_flags: 0
+        let mut req = unsafe {
+            mem::MaybeUninit::<libc::msghdr>::zeroed().assume_init()
         };
+        req.msg_name = &self.addr as *const _ as *mut _;
+        req.msg_namelen = mem::size_of_val(&self.addr) as _;
+        req.msg_iov = &mut msg as *mut _ as *mut _;
+        req.msg_iovlen = 1;
 
         let res = unsafe {
-            libc::sendmsg(self.fd, &mut msg as *mut _, 0)
+            libc::sendmsg(self.fd, &mut req as *mut _, 0)
         };
         res >= 0
     }
@@ -111,18 +109,16 @@ impl Socket {
             iov_base: buffer.as_mut_ptr() as *mut _,
             iov_len: buffer.len(),
         };
-        let mut msg = libc::msghdr {
-            msg_name: &self.addr as *const _ as *mut _,
-            msg_namelen: mem::size_of_val(&self.addr) as _,
-            msg_iov: &mut msg as *mut _,
-            msg_iovlen: 1,
-            msg_control: ptr::null_mut(),
-            msg_controllen: 0,
-            msg_flags: 0
+        let mut req = unsafe {
+            mem::MaybeUninit::<libc::msghdr>::zeroed().assume_init()
         };
+        req.msg_name = &self.addr as *const _ as *mut _;
+        req.msg_namelen = mem::size_of_val(&self.addr) as _;
+        req.msg_iov = &mut msg as *mut _ as *mut _;
+        req.msg_iovlen = 1;
 
         let res = unsafe {
-            libc::recvmsg(self.fd, &mut msg as *mut _, 0)
+            libc::recvmsg(self.fd, &mut req as *mut _, 0)
         };
 
         if res < 0  {
