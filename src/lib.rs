@@ -9,7 +9,7 @@
 macro_rules! unreach {
     () => ({
         unsafe {
-            std::hint::unreachable_unchecked();
+            core::hint::unreachable_unchecked();
         }
     })
 }
@@ -24,6 +24,11 @@ macro_rules! unreach {
 
 mod data;
 
+#[cfg(not(any(unix, windows)))]
+mod unknown;
+#[cfg(not(any(unix, windows)))]
+pub use unknown::*;
+
 #[cfg(windows)]
 mod win32;
 #[cfg(windows)]
@@ -34,5 +39,6 @@ mod unix;
 #[cfg(unix)]
 pub use unix::*;
 
+#[cfg(any(unix, windows))]
 pub use network::Interfaces as NetworkInterfaces;
 pub use os_id::{ProcessId, ThreadId, ThreadName};

@@ -20,6 +20,7 @@ impl fmt::Display for Address {
 }
 
 impl Address {
+    #[allow(unused)]
     ///Calculates netmask from prefix.
     pub const fn net_mask(&self) -> net::IpAddr {
         match self.ip {
