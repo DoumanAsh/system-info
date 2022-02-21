@@ -1,7 +1,6 @@
 //! Network information.
 
 extern crate alloc;
-extern crate std;
 
 use windows_sys::Win32::Globalization::{CP_UTF8, WideCharToMultiByte};
 use windows_sys::Win32::NetworkManagement::IpHelper::{AF_UNSPEC, AF_INET, AF_INET6, GetAdaptersAddresses, IP_ADAPTER_ADDRESSES_LH, IP_ADAPTER_UNICAST_ADDRESS_LH};
@@ -10,12 +9,11 @@ use windows_sys::Win32::Foundation::ERROR_BUFFER_OVERFLOW;
 
 use core::{mem, ptr};
 
-use std::net;
 use alloc::vec::Vec;
 use alloc::string::String;
 use alloc::borrow::Cow;
 
-pub use crate::data::network::Address;
+pub use crate::data::network::{Ip, Address};
 
 impl Address {
     #[inline(always)]
@@ -43,11 +41,10 @@ impl Address {
                 return None
             }
 
-            let addr = addr.to_ne_bytes();
-            let addr = net::Ipv4Addr::new(addr[0], addr[1], addr[2], addr[3]);
+            let ip = Ip::V4(addr.to_ne_bytes());
 
             Some(Self {
-                ip: net::IpAddr::V4(addr),
+                ip,
                 prefix: raw.OnLinkPrefixLength,
             })
         } else if addr.sa_family == AF_INET6 as u16 {
@@ -59,7 +56,7 @@ impl Address {
                 mem::transmute(addr)
             };
 
-            let addr: [u8; 16] = unsafe {
+            let addr: [u16; 8] = unsafe {
                 mem::transmute(addr.sin6_addr.u)
             };
 
@@ -68,7 +65,7 @@ impl Address {
                 None
             } else {
                 Some(Self {
-                    ip: net::IpAddr::V6(net::Ipv6Addr::from(addr)),
+                    ip: Ip::V6(addr),
                     prefix: raw.OnLinkPrefixLength,
                 })
             }

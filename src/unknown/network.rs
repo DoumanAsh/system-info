@@ -1,6 +1,6 @@
 //! Network information.
 
-pub use crate::data::network::Address;
+pub use crate::data::network::{Ip, Address};
 
 extern crate alloc;
 

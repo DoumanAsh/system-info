@@ -26,3 +26,10 @@ features = [
     "Win32_System_SystemInformation",
     "Win32_System_Diagnostics_Debug"
 ]
+
+[features]
+# Enables std
+std = []
+
+[package.metadata.docs.rs]
+features = ["std"]

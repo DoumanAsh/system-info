@@ -1,13 +1,12 @@
 //! Network information.
 
-extern crate std;
+extern crate alloc;
 
-use std::vec::Vec;
-use std::net;
+use alloc::vec::Vec;
 
 use core::mem;
 
-pub use crate::data::network::Address;
+pub use crate::data::network::{Ip, Address};
 pub use crate::unix::posix::network::Interfaces;
 use crate::unix::posix::network::{slice_c_str, InterfaceData};
 
@@ -223,10 +222,10 @@ impl Interfaces {
                                     let interface = result.store_interface(if_req.ifa_index)?;
 
                                     let ip = extract_rta_data::<[u8; mem::size_of::<u32>()]>(rta_attr);
-                                    let ip = net::Ipv4Addr::new(ip[0], ip[1], ip[2], ip[3]);
+                                    let ip = Ip::V4(ip);
 
                                     interface.push(Address {
-                                        ip: net::IpAddr::V4(ip),
+                                        ip,
                                         prefix: if_req.ifa_prefixlen,
                                     });
                                 }
@@ -236,10 +235,10 @@ impl Interfaces {
                                 if if_req.ifa_family == libc::AF_INET6 as u8 {
                                     let interface = result.store_interface(if_req.ifa_index)?;
                                     let ip = extract_rta_data::<[u16; 8]>(rta_attr);
-                                    let ip = net::Ipv6Addr::new(ip[0], ip[1], ip[2], ip[3], ip[4], ip[5], ip[6], ip[7]);
+                                    let ip = Ip::V6(ip);
 
                                     interface.push(Address {
-                                        ip: net::IpAddr::V6(ip),
+                                        ip,
                                         prefix: if_req.ifa_prefixlen,
                                     });
                                 }

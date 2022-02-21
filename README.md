@@ -5,3 +5,11 @@
 [![Build](https://github.com/DoumanAsh/system-info/workflows/Rust/badge.svg)](https://github.com/DoumanAsh/system-info/actions?query=workflow%3ARust)
 
 System information library.
+
+## Requirements
+
+- `alloc` - Requires heap allocations to store network data on unix & windows systems.
+
+## Features
+
+- `std` - Enables std's types support;

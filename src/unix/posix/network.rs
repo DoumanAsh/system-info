@@ -1,14 +1,13 @@
 //! Network information.
 
-extern crate std;
+extern crate alloc;
 
-use std::vec::Vec;
-use std::borrow::Cow;
+use alloc::vec::Vec;
+use alloc::borrow::Cow;
 
 use core::{slice, iter};
 
-pub use crate::data::network::Address;
-
+pub use crate::data::network::{Ip, Address};
 
 #[inline(always)]
 pub(crate) fn slice_c_str(input: &[u8; libc::IFNAMSIZ]) -> &[u8] {
@@ -167,7 +166,6 @@ impl Interfaces {
     ///In case of failure please check `std::io::Error::last_os_error()`
     pub fn new() -> Option<Self> {
         use core::mem;
-        use std::net;
 
         struct IfAddrs(*mut libc::ifaddrs);
 
@@ -230,7 +228,7 @@ impl Interfaces {
                 };
 
                 let ip = ifa_addr.sin_addr.s_addr.to_ne_bytes();
-                let ip = net::Ipv4Addr::new(ip[0], ip[1], ip[2], ip[3]);
+                let ip = Ip::V4([ip[0], ip[1], ip[2], ip[3]]);
                 let net_mask = unsafe {
                     addr.ifa_netmask.as_ref()
                 };
@@ -248,7 +246,7 @@ impl Interfaces {
                 };
 
                 interface.push(Address {
-                    ip: net::IpAddr::V4(ip),
+                    ip,
                     prefix
                 });
             } else if ifa_addr.sa_family == libc::AF_INET6 as _ {
@@ -259,7 +257,7 @@ impl Interfaces {
                 let ip: [u16; 8] = unsafe {
                     mem::transmute(ifa_addr.sin6_addr.s6_addr)
                 };
-                let ip = net::Ipv6Addr::new(ip[0], ip[1], ip[2], ip[3], ip[4], ip[5], ip[6], ip[7]);
+                let ip = Ip::V6(ip);
                 let net_mask = unsafe {
                     addr.ifa_netmask.as_ref()
                 };
@@ -280,7 +278,7 @@ impl Interfaces {
                 };
 
                 interface.push(Address {
-                    ip: net::IpAddr::V6(ip),
+                    ip,
                     prefix
                 });
             }

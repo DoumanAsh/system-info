@@ -1,4 +1,12 @@
 //! System information library
+//!
+//!## Requirements
+//!
+//!- `alloc` - Requires heap allocations to store network data on unix & windows systems.
+//!
+//!## Features
+//!
+//!- `std` - Enables std's types support;
 
 #![no_std]
 #![warn(missing_docs)]
@@ -9,6 +17,7 @@
 #[cfg(not(debug_assertions))]
 macro_rules! unreach {
     () => ({
+        #[allow(unused_unsafe)]
         unsafe {
             core::hint::unreachable_unchecked();
         }
