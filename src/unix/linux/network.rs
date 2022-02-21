@@ -3,12 +3,13 @@
 extern crate std;
 
 use std::vec::Vec;
-use std::borrow::Cow;
 use std::net;
 
-use core::{mem, slice, iter};
+use core::mem;
 
 pub use crate::data::network::Address;
+pub use crate::unix::posix::network::Interfaces;
+use crate::unix::posix::network::{slice_c_str, InterfaceData};
 
 const ALIGN_SIZE: usize = 4;
 const NETLINK_HEADER_SIZE: usize = mem::size_of::<libc::nlmsghdr>();
@@ -54,17 +55,6 @@ unsafe fn extract_rta_data<T: Copy>(rta_attr: &RtaAttr) -> T {
 
     (out.as_mut_ptr() as *mut u8).copy_from_nonoverlapping(rta_data, rta_len as usize);
     out.assume_init()
-}
-
-#[inline(always)]
-fn slice_c_str(input: &[u8; libc::IFNAMSIZ]) -> &[u8] {
-    for idx in 0..input.len() {
-        if input[idx] == 0 {
-            return &input[..idx];
-        }
-    }
-
-    &input[..]
 }
 
 struct Socket {
@@ -149,107 +139,6 @@ fn socket() -> Option<libc::c_int> {
     }
 
     Some(fd)
-}
-
-///Iterator over socket addresses
-pub struct Addresses<'a> {
-    cursor: iter::Copied<slice::Iter<'a, Address>>
-}
-
-impl<'a> Addresses<'a> {
-    ///Moves cursor, returning address, if it is valid IP address.
-    pub fn next_addr(&mut self) -> Option<Address> {
-        self.cursor.next()
-    }
-}
-
-impl<'a> Iterator for Addresses<'a> {
-    type Item = Address;
-
-    #[inline]
-    fn next(&mut self) -> Option<Self::Item> {
-        self.next_addr()
-    }
-}
-
-
-///Network interface
-pub struct Interface<'a> {
-    data: &'a InterfaceData
-}
-
-impl<'a> Interface<'a> {
-    #[inline]
-    ///Returns name of the interface, if available as utf-8 string.
-    pub fn name(&'a self) -> Option<Cow<'a, str>> {
-        let name = self.data.name();
-        match core::str::from_utf8(name) {
-            Ok(name) => Some(name.into()),
-            Err(_) => None,
-        }
-    }
-
-    #[inline(always)]
-    ///Returns iterator over interface's addresses.
-    pub fn addresses(&'a self) -> Addresses<'a> {
-        Addresses {
-            cursor: self.data.addresses.iter().copied()
-        }
-    }
-}
-
-struct InterfaceData {
-    name: [u8; libc::IFNAMSIZ],
-    addresses: Vec<Address>
-}
-
-impl InterfaceData {
-    #[inline]
-    fn name(&self) -> &[u8] {
-        slice_c_str(&self.name)
-    }
-
-    #[inline]
-    fn push(&mut self, addr: Address) {
-        self.addresses.push(addr);
-    }
-}
-
-///Iterator over [Interfaces](struct.Interfaces.html)
-pub struct InterfacesIter<'a> {
-    cursor: slice::Iter<'a, InterfaceData>,
-}
-
-impl<'a> InterfacesIter<'a> {
-    #[inline(always)]
-    ///Returns current interface, if any, without moving cursor
-    pub fn interface(&'a self) -> Option<Interface<'a>> {
-        self.cursor.as_slice().get(0).map(|data| Interface {
-            data
-        })
-    }
-
-    #[inline(always)]
-    ///Moves cursor and returns current interface, if there is any.
-    pub fn next_interface(&'a mut self) -> Option<Interface<'a>> {
-        self.next()
-    }
-}
-
-impl<'a> Iterator for InterfacesIter<'a> {
-    type Item = Interface<'a>;
-
-    #[inline]
-    fn next(&mut self) -> Option<Self::Item> {
-        self.cursor.next().map(|data| Interface {
-            data
-        })
-    }
-}
-
-///Network interfaces enumerator.
-pub struct Interfaces {
-    inner: Vec<InterfaceData>,
 }
 
 impl Interfaces {
@@ -378,22 +267,5 @@ impl Interfaces {
 
         //Failed to read from socket
         None
-    }
-
-    ///Returns iterator over interfaces
-    pub fn iter(&self) -> InterfacesIter<'_> {
-        InterfacesIter {
-            cursor: self.inner.iter()
-        }
-    }
-}
-
-impl<'a> IntoIterator for &'a Interfaces {
-    type Item = Interface<'a>;
-    type IntoIter = InterfacesIter<'a>;
-
-    #[inline(always)]
-    fn into_iter(self) -> Self::IntoIter {
-        self.iter()
     }
 }
