@@ -1,8 +1,9 @@
-use core::{mem, ptr};
+use core::ptr;
 
 use windows_sys::Win32::Globalization::{CP_UTF8, WideCharToMultiByte};
 use windows_sys::Win32::System::SystemInformation::{ComputerNamePhysicalDnsHostname, GetComputerNameExW};
 
+pub mod mem;
 pub mod cpu;
 pub mod network;
 pub use crate::data::host::HostName;
@@ -10,7 +11,7 @@ pub use crate::data::host::HostName;
 impl HostName {
     ///Retrieves host's name.
     pub fn get() -> Option<HostName> {
-        let mut buff = mem::MaybeUninit::<[u16; HostName::capacity()]>::uninit();
+        let mut buff = core::mem::MaybeUninit::<[u16; HostName::capacity()]>::uninit();
         let mut size = HostName::capacity();
 
         let res = unsafe {

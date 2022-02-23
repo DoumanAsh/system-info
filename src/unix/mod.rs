@@ -1,6 +1,11 @@
 mod posix;
-#[cfg(not(any(target_os = "linux", target_os = "android")))]
+#[cfg(not(any(target_os = "linux", target_os = "android", target_os = "macos", target_os = "ios")))]
 pub use posix::*;
+
+#[cfg(any(target_os = "macos", target_os = "ios"))]
+mod apple;
+#[cfg(any(target_os = "macos", target_os = "ios"))]
+pub use apple::*;
 
 #[cfg(any(target_os = "linux", target_os = "android"))]
 mod linux;

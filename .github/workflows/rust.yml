@@ -54,16 +54,21 @@ jobs:
       if: runner.os == 'Windows'
       run: |
         ipconfig
+        wmic ComputerSystem get TotalPhysicalMemory
+        wmic OS get FreePhysicalMemory
 
     - name: Gather system info Linux
       if: runner.os == 'Linux'
       run: |
         ifconfig
+        free
 
     - name: Gather system info MacOS
       if: runner.os == 'macOS'
       run: |
         ifconfig
+        echo "Total memory"
+        sysctl -n hw.memsize
 
     - name: Test
       if: runner.os != 'Linux'

@@ -1,5 +1,6 @@
 pub mod cpu;
 pub mod network;
+pub mod mem;
 
 pub use crate::data::host::HostName;
 
