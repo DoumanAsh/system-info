@@ -1,9 +1,9 @@
 [package]
 name = "system-info"
-version = "1.0.0"
+version = "0.1.0"
 authors = ["Douman <douman@gmx.se>"]
 edition = "2018"
-keywords = ["os", "system", "network", "ip", "local", "getifaddrs", "cpu"]
+keywords = ["os", "system", "network", "ip", "getifaddrs"]
 description = "Library to get system information"
 categories = ["os", "api-bindings"]
 repository = "https://github.com/DoumanAsh/system-info"
