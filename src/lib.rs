@@ -49,5 +49,5 @@ mod unix;
 #[cfg(unix)]
 pub use unix::*;
 
-#[cfg(any(unix, windows))]
 pub use network::Interfaces as NetworkInterfaces;
+pub use mem::SystemMemory;

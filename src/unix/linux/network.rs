@@ -7,7 +7,7 @@ use alloc::vec::Vec;
 use core::mem;
 
 pub use crate::data::network::{Ip, Address};
-pub use crate::unix::posix::network::Interfaces;
+pub use crate::unix::posix::network::{Interfaces, InterfacesIter, Interface, Addresses};
 use crate::unix::posix::network::{slice_c_str, InterfaceData};
 
 const ALIGN_SIZE: usize = 4;
