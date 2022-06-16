@@ -1,6 +1,6 @@
 [package]
 name = "system-info"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Douman <douman@gmx.se>"]
 edition = "2018"
 keywords = ["os", "system", "network", "ip", "getifaddrs"]
@@ -14,7 +14,7 @@ version = "0.2"
 default-features = false
 
 [target.'cfg(target_os = "windows")'.dependencies.windows-sys]
-version = "0.32.0"
+version = "0.36.1"
 features = [
     "Win32_Foundation",
     "Win32_Globalization",

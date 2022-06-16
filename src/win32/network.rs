@@ -3,7 +3,8 @@
 extern crate alloc;
 
 use windows_sys::Win32::Globalization::{CP_UTF8, WideCharToMultiByte};
-use windows_sys::Win32::NetworkManagement::IpHelper::{AF_UNSPEC, AF_INET, AF_INET6, GetAdaptersAddresses, IP_ADAPTER_ADDRESSES_LH, IP_ADAPTER_UNICAST_ADDRESS_LH};
+use windows_sys::Win32::Networking::WinSock::{AF_INET6, AF_INET, AF_UNSPEC};
+use windows_sys::Win32::NetworkManagement::IpHelper::{GetAdaptersAddresses, IP_ADAPTER_ADDRESSES_LH, IP_ADAPTER_UNICAST_ADDRESS_LH};
 use windows_sys::Win32::NetworkManagement::IpHelper::{GAA_FLAG_SKIP_ANYCAST, GAA_FLAG_SKIP_MULTICAST, GAA_FLAG_SKIP_DNS_SERVER, GAA_FLAG_INCLUDE_PREFIX};
 use windows_sys::Win32::Foundation::ERROR_BUFFER_OVERFLOW;
 
